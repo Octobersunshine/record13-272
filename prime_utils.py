@@ -10,8 +10,9 @@ def is_prime(n):
         return True
     if n % 2 == 0 or n % 3 == 0:
         return False
+    limit = math.isqrt(n)
     i = 5
-    while i * i <= n:
+    while i <= limit:
         if n % i == 0 or n % (i + 2) == 0:
             return False
         i += 6
@@ -23,12 +24,20 @@ def get_factors(n):
         raise TypeError("输入必须为整数")
     if n <= 0:
         raise ValueError("输入必须为正整数")
-    factors = set()
-    for i in range(1, int(math.isqrt(n)) + 1):
-        if n % i == 0:
-            factors.add(i)
-            factors.add(n // i)
-    return sorted(factors)
+    pf = prime_factors(n)
+    counter = {}
+    for p in pf:
+        counter[p] = counter.get(p, 0) + 1
+    divisors = [1]
+    for prime, exp in counter.items():
+        new_divisors = []
+        pe = 1
+        for e in range(exp + 1):
+            for d in divisors:
+                new_divisors.append(d * pe)
+            pe *= prime
+        divisors = new_divisors
+    return sorted(divisors)
 
 
 def prime_factors(n):
@@ -40,12 +49,20 @@ def prime_factors(n):
     while n % 2 == 0:
         factors.append(2)
         n = n // 2
-    i = 3
-    while i * i <= n:
+    while n % 3 == 0:
+        factors.append(3)
+        n = n // 3
+    limit = math.isqrt(n)
+    i = 5
+    while i <= limit:
         while n % i == 0:
             factors.append(i)
             n = n // i
-        i += 2
+        while n % (i + 2) == 0:
+            factors.append(i + 2)
+            n = n // (i + 2)
+        limit = math.isqrt(n)
+        i += 6
     if n > 2:
         factors.append(n)
     return factors
