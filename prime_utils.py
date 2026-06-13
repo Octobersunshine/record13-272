@@ -68,6 +68,33 @@ def prime_factors(n):
     return factors
 
 
+def sieve_primes(start, end):
+    if not isinstance(start, int) or not isinstance(end, int):
+        raise TypeError("输入必须为整数")
+    if start > end:
+        raise ValueError("起始值不能大于结束值")
+    if end < 2:
+        return []
+    start = max(start, 2)
+    if end < 3:
+        return [2] if start <= 2 else []
+    limit = math.isqrt(end)
+    base = [True] * (limit + 1)
+    base[0] = base[1] = False
+    for i in range(2, limit + 1):
+        if base[i]:
+            for j in range(i * i, limit + 1, i):
+                base[j] = False
+    small_primes = [i for i, is_p in enumerate(base) if is_p]
+    size = end - start + 1
+    sieve = [True] * size
+    for p in small_primes:
+        first = max(p * p, ((start + p - 1) // p) * p)
+        for j in range(first - start, size, p):
+            sieve[j] = False
+    return [start + i for i, is_p in enumerate(sieve) if is_p]
+
+
 def analyze_number(n):
     if not isinstance(n, int):
         raise TypeError("输入必须为整数")
